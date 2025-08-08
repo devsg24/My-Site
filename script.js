@@ -1,66 +1,118 @@
-/* Basic Styles & Variables */
-:root {
-    --primary-color: #00e5ff; /* Electric Blue */
-    --secondary-color: #00ff8c; /* Bright Green */
-    --dark-color: #121212; /* Deep Charcoal */
-    --background-color: #1c1c1c; /* Dark Grey */
-    --card-bg: #222222; /* Slightly Lighter Dark Grey */
-    --text-color: #f0f0f0; /* Off-White */
-    --placeholder-color: #7f8c8d;
-    --border-color: #333333;
-    --font-family: 'Roboto Mono', monospace;
-    --font-size-base: 1rem;
-}
+document.addEventListener('DOMContentLoaded', () => {
+    // Smooth scrolling for navigation links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
 
-* {
-    box-sizing: border-box;
-}
+    // Form submission handling
+    const contactForm = document.getElementById('contactForm');
+    const formStatus = document.getElementById('formStatus');
+    const mcuSelect = document.getElementById('mcu-select');
+    const dynamicFields = document.getElementById('dynamic-fields');
 
-body {
-    font-family: var(--font-family);
-    line-height: 1.6;
-    margin: 0;
-    padding: 0;
-    background-color: var(--background-color);
-    color: var(--text-color);
-    overflow-x: hidden;
-    scroll-behavior: smooth;
-}
+    // Data for dynamic troubleshooting suggestions
+    const troubleshootingData = {
+        'arduino-uno': [
+            "Check your USB cable and COM port connection.",
+            "Verify the correct board and port are selected in the Arduino IDE.",
+            "Ensure power supply is stable (5V).",
+            "Double-check your wiring, especially for VCC, GND, and signal pins.",
+            "If using an external power source, make sure the jumper is in the correct position."
+        ],
+        'esp32': [
+            "Check if the board is in 'flash mode' by holding down the BOOT button while uploading.",
+            "Verify your USB-to-serial driver is installed and working.",
+            "Make sure your power source can provide sufficient current (e.g., 500mA+).",
+            "If using Wi-Fi, check for a stable network connection and correct credentials.",
+            "Look for 'brownout detector was triggered' messages in the serial monitor - a sign of power issues."
+        ],
+        'esp8266': [
+            "Hold down the FLASH button while uploading new code.",
+            "Ensure the correct board (e.g., 'Generic ESP8266 Module') and port are selected.",
+            "Check for stable 3.3V power supply and sufficient current.",
+            "If Wi-Fi is failing, verify your SSID and password are correct and a stable signal is present.",
+            "Look for 'fatal exception' errors in the serial monitor, which often point to code bugs."
+        ],
+        'stm32': [
+            "Ensure you have a proper ST-Link V2 or similar programmer connected.",
+            "Verify the bootloader configuration (BOOT0/BOOT1 jumpers).",
+            "Check that you have installed the correct STM32CubeIDE or compatible toolchain.",
+            "Review your pin assignments and clock configuration in your initialization code.",
+            "Look for memory access errors or hard faults which can be tricky to debug."
+        ],
+        'other': [
+            "Provide the specific model of your microcontroller in the issue description.",
+            "Include a link to the manufacturer's datasheet or a relevant schematic.",
+            "Detail any specific communication protocols or external components you are using.",
+            "Include your full code for a more thorough analysis."
+        ]
+    };
 
-h1, h2, h3 {
-    margin-top: 0;
-    font-weight: 700;
-}
+    // Event listener for microcontroller selection
+    mcuSelect.addEventListener('change', (e) => {
+        const selectedMcu = e.target.value;
+        dynamicFields.innerHTML = ''; // Clear previous fields
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
+        if (selectedMcu && troubleshootingData[selectedMcu]) {
+            const suggestions = troubleshootingData[selectedMcu];
+            const suggestionsHTML = `
+                <div class="troubleshooting-suggestions">
+                    <h4>Common Troubleshooting Steps for ${e.target.options[e.target.selectedIndex].text}:</h4>
+                    <ul>
+                        ${suggestions.map(step => `<li>${step}</li>`).join('')}
+                    </ul>
+                    <p>If you've tried these steps and the problem persists, please fill out the form below.</p>
+                </div>
+            `;
+            dynamicFields.innerHTML = suggestionsHTML;
+        }
+    });
 
-/* Transitions and Animations */
-.cta-button, .submit-button, .service-card, .step-card {
-    transition: all 0.3s ease-in-out;
-}
+    contactForm.addEventListener('submit', function(e) {
+        e.preventDefault(); // Prevent default form submission
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+        // Simulate an API call
+        formStatus.textContent = "Submitting your request...";
+        formStatus.style.color = 'var(--primary-color)';
+        
+        setTimeout(() => {
+            // Success message
+            const name = contactForm.querySelector('#name').value;
+            formStatus.textContent = `Thanks, ${name}! Your troubleshooting request has been received. Our team will get back to you shortly.`;
+            formStatus.style.color = 'var(--secondary-color)';
+            contactForm.reset();
+            dynamicFields.innerHTML = ''; // Clear dynamic fields after submission
+        }, 1500); // Wait 1.5 seconds to simulate loading
+    });
 
-@keyframes slideInUp {
-    from { opacity: 0; transform: translateY(50px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+    // Intersection Observer for animations
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.2 // Trigger when 20% of the section is visible
+    };
 
-@keyframes glow {
-    0% { box-shadow: 0 0 5px var(--primary-color); }
-    50% { box-shadow: 0 0 15px var(--primary-color); }
-    100% { box-shadow: 0 0 5px var(--primary-color); }
-}
+    const sectionObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const elementsToAnimate = entry.target.querySelectorAll('.service-card, .step-card, .contact-form');
+                elementsToAnimate.forEach(el => el.style.opacity = '1');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
 
-/* Hero Section */
-.hero-section {
+    document.querySelectorAll('section').forEach(section => {
+        if(section.id !== 'hero') { 
+            sectionObserver.observe(section);
+        }
+    });
+});
     background: var(--dark-color);
     padding: 150px 0;
     text-align: center;
