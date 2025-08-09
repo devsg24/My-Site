@@ -1,67 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neo-Solve - Microcontroller Troubleshooting</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Microcontroller Troubleshooting Service</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-    <header class="hero-section" id="hero">
-        <div class="container">
-            <h1 class="headline">Circuit Glitch? We've Got the Fix.</h1>
-            <p class="subheadline">Expert-level troubleshooting for your microcontroller projects. Fast, reliable, and precise.</p>
-            <a href="#contact" class="cta-button">Start Troubleshooting Now</a>
-        </div>
-    </header>
+  <header class="hero">
+    <div class="container">
+      <h1>Expert Arduino & Microcontroller Troubleshooting</h1>
+      <p>Fast & reliable solutions for ESP32, ESP8266, STM32 & more.</p>
+      <a href="#contact" class="btn-primary">Submit Your Issue</a>
+    </div>
+  </header>
 
-    <section class="services-section" id="services">
-        <div class="container">
-            <h2 class="section-title">Areas of Expertise</h2>
-            <div class="services-grid">
-                <div class="service-card">
-                    <h3 class="card-title">Code Logic & Firmware</h3>
-                    <p>Debugging C++, Python, and Arduino sketches. We hunt down logic errors, infinite loops, and race conditions.</p>
-                </div>
-                <div class="service-card">
-                    <h3 class="card-title">Hardware & Wiring</h3>
-                    <p>Diagnose physical component failures, incorrect wiring, power supply issues, and short circuits.</p>
-                </div>
-                <div class="service-card">
-                    <h3 class="card-title">Communication Protocols</h3>
-                    <p>Fix issues with I2C, SPI, UART, CAN Bus, as well as Wi-Fi, Bluetooth, and LoRa connectivity.</p>
-                </div>
-                <div class="service-card">
-                    <h3 class="card-title">Sensor & Actuator Integration</h3>
-                    <p>Solve problems with sensor readings, motor control, display drivers, and other peripheral integrations.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+  <section class="services container">
+    <h2>Our Troubleshooting Services</h2>
+    <div class="service-list">
+      <div class="service-item fade-in">
+        <h3>Arduino</h3>
+        <p>Code debugging, wiring checks, sensor & module issues.</p>
+      </div>
+      <div class="service-item fade-in">
+        <h3>ESP32 & ESP8266</h3>
+        <p>Wi-Fi & Bluetooth connectivity, OTA updates, power optimization.</p>
+      </div>
+      <div class="service-item fade-in">
+        <h3>STM32 & Others</h3>
+        <p>Bootloader issues, peripheral configurations, hardware faults.</p>
+      </div>
+      <div class="service-item fade-in">
+        <h3>General Microcontrollers</h3>
+        <p>Communication protocols, pin mapping, debugging tips.</p>
+      </div>
+    </div>
+  </section>
 
-    <section class="how-it-works-section" id="how-it-works">
-        <div class="container">
-            <h2 class="section-title">The Solution Process</h2>
-            <div class="steps-grid">
-                <div class="step-card">
-                    <div class="step-number">01</div>
-                    <h3 class="card-title">Select & Describe</h3>
-                    <p>Choose your microcontroller and describe your issue with code snippets and a brief explanation.</p>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">02</div>
-                    <h3 class="card-title">Expert Analysis</h3>
-                    <p>Our specialists will analyze your problem, leveraging years of experience to identify the core issue.</p>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">03</div>
-                    <h3 class="card-title">Receive Your Fix</h3>
-                    <p>You'll receive a detailed, step-by-step solution, whether it's a code fix or a hardware guide.</p>
-                </div>
-            </div>
-        </div>
+  <section class="how-it-works container">
+    <h2>How It Works</h2>
+    <div class="steps">
+      <div class="step fade-in">
+        <div class="step-number">1</div>
+        <h3>Describe Your Issue</h3>
+        <p>Fill out our simple form with your problem details.</p>
+      </div>
+      <div class="step fade-in">
+        <div class="step-number">2</div>
+        <h3>Get Expert Analysis</h3>
+        <p>Our team reviews and diagnoses your issue quickly.</p>
+      </div>
+      <div class="step fade-in">
+        <div class="step-number">3</div>
+        <h3>Receive Solutions</h3>
+        <p>We provide clear troubleshooting steps or code fixes.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="contact container">
+    <h2>Submit Your Issue</h2>
+    <form id="contact-form" novalidate>
+      <label for="name">Your Name</label>
+      <input type="text" id="name" name="name" placeholder="Enter your name" required />
+
+      <label for="email">Email Address</label>
+      <input type="email" id="email" name="email" placeholder="Enter your email" required />
+
+      <label for="device">Device Type</label>
+      <select id="device" name="device" required>
+        <option value="" disabled selected>Select device</option>
+        <option value="arduino">Arduino</option>
+        <option value="esp32">ESP32</option>
+        <option value="esp8266">ESP8266</option>
+        <option value="stm32">STM32</option>
+        <option value="other">Other</option>
+      </select>
+
+      <label for="issue">Issue Description</label>
+      <textarea id="issue" name="issue" rows="5" placeholder="Describe your problem" required></textarea>
+
+      <button type="submit" class="btn-primary">Send Issue</button>
+      <p class="form-message" aria-live="polite"></p>
+    </form>
+  </section>
+
+  <footer class="footer">
+    <p>© 2025 Microcontroller Troubleshooting Service • Open Source & Free</p>
+  </footer>
+
+  <script src="scripts.js"></script>
+</body>
+</html>        </div>
     </section>
 
     <section class="contact-section" id="contact">
