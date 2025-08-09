@@ -1,40 +1,48 @@
+// Animate fade-in elements on scroll
 document.addEventListener('DOMContentLoaded', () => {
-    // Smooth scrolling for navigation links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            e.preventDefault();
-            document.querySelector(this.getAttribute('href')).scrollIntoView({
-                behavior: 'smooth'
-            });
-        });
+  const faders = document.querySelectorAll('.fade-in');
+
+  const appearOptions = {
+    threshold: 0.3,
+    rootMargin: "0px 0px -50px 0px"
+  };
+
+  const appearOnScroll = new IntersectionObserver(function(entries, appearOnScroll) {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('visible');
+      appearOnScroll.unobserve(entry.target);
     });
+  }, appearOptions);
 
-    // Form submission handling
-    const contactForm = document.getElementById('contactForm');
-    const formStatus = document.getElementById('formStatus');
-    const mcuSelect = document.getElementById('mcu-select');
-    const dynamicFields = document.getElementById('dynamic-fields');
+  faders.forEach(fader => {
+    appearOnScroll.observe(fader);
+  });
 
-    // Data for dynamic troubleshooting suggestions
-    const troubleshootingData = {
-        'arduino-uno': [
-            "Check your USB cable and COM port connection.",
-            "Verify the correct board and port are selected in the Arduino IDE.",
-            "Ensure power supply is stable (5V).",
-            "Double-check your wiring, especially for VCC, GND, and signal pins.",
-            "If using an external power source, make sure the jumper is in the correct position."
-        ],
-        'esp32': [
-            "Check if the board is in 'flash mode' by holding down the BOOT button while uploading.",
-            "Verify your USB-to-serial driver is installed and working.",
-            "Make sure your power source can provide sufficient current (e.g., 500mA+).",
-            "If using Wi-Fi, check for a stable network connection and correct credentials.",
-            "Look for 'brownout detector was triggered' messages in the serial monitor - a sign of power issues."
-        ],
-        'esp8266': [
-            "Hold down the FLASH button while uploading new code.",
-            "Ensure the correct board (e.g., 'Generic ESP8266 Module') and port are selected.",
-            "Check for stable 3.3V power supply and sufficient current.",
+  // Simple form validation + feedback
+  const form = document.getElementById('contact-form');
+  const formMessage = form.querySelector('.form-message');
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    formMessage.textContent = '';
+
+    if (!form.checkValidity()) {
+      formMessage.textContent = 'Please fill out all fields correctly.';
+      formMessage.style.color = '#cc0000';
+      return;
+    }
+
+    // Simulate form submission
+    formMessage.textContent = 'Submitting your issue...';
+    formMessage.style.color = '#009933';
+
+    setTimeout(() => {
+      formMessage.textContent = 'Thank you! Your issue has been submitted.';
+      form.reset();
+    }, 1500);
+  });
+});            "Check for stable 3.3V power supply and sufficient current.",
             "If Wi-Fi is failing, verify your SSID and password are correct and a stable signal is present.",
             "Look for 'fatal exception' errors in the serial monitor, which often point to code bugs."
         ],
