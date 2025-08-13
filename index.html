@@ -1,14 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Hand Drawing with Gestures</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    canvas, video {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    canvas {
+      z-index: 1;
+    }
+  </style>
 </head>
-
 <body>
+  <video id="webcam" autoplay playsinline width="640" height="480" style="display:none;"></video>
+  <canvas id="drawingCanvas" width="640" height="480"></canvas>
 
+  <!-- TensorFlow.js -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"></script>
+
+  <!-- HandPose Model -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/handpose"></script>
+
+  <script>
+    const video = document.getElementById('webcam');
+    const canvas = document.getElementById('drawingCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let model;
+    let previousPosition = null;
+    let drawing = false;
+
+    async function setupCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: false
+        });
+        video.srcObject = stream;
+        return new Promise((resolve) => {
+          video.onloadedmetadata = () => {
+            resolve(video);
+          };
+        });
+      } catch (err) {
+        alert("Error accessing webcam: " + err.message);
+        console.error(err);
+      }
+    }
+
+    async function loadModel() {
+      model = await handpose.load();
+      console.log("Handpose model loaded.");
+    }
+
+    function isPinching(landmarks) {
+      const indexTip = landmarks[8];
+      const thumbTip = landmarks[4];
+      const distance = Math.hypot(
+        indexTip[0] - thumbTip[0],
+        indexTip[1] - thumbTip[1]
+      );
+      return distance < 40; // Adjust sensitivity here
+    }
+
+    async function detectHands() {
+      const predictions = await model.estimateHands(video);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (predictions.length > 0) {
+        const landmarks = predictions[0].landmarks;
+        const indexFinger = landmarks[8];
+
+        // Draw fingertip for debug
+        ctx.beginPath();
+        ctx.arc(indexFinger[0], indexFinger[1], 5, 0, 2 * Math.PI);
+        ctx.fillStyle = "red";
+        ctx.fill();
+
+        drawing = isPinching(landmarks);
+
+        if (drawing && previousPosition) {
+          ctx.beginPath();
+          ctx.moveTo(previousPosition[0], previousPosition[1]);
+          ctx.lineTo(indexFinger[0], indexFinger[1]);
+          ctx.strokeStyle = "black";
+          ctx.lineWidth = 3;
+          ctx.stroke();
+        }
+
+        previousPosition = [indexFinger[0], indexFinger[1]];
+      } else {
+        previousPosition = null;
+      }
+
+      requestAnimationFrame(detectHands);
+    }
+
+    async function main() {
+      await setupCamera();
+      await loadModel();
+      detectHands();
+    }
+
+    main();
+  </script>
 </body>
-
 </html>
